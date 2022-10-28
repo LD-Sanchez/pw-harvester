@@ -4,7 +4,6 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-import com.opencsv.CSVWriter;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.HeaderColumnNameMappingStrategyBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -13,11 +12,18 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+class MarketListing {
+    String name;
+    String description;
+    String price;
+    String listingUrl;
+    String imageUrl;
+    int orderOnPage;
+    boolean paidSearch;
+}
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -41,8 +47,8 @@ public class Main {
                 listing.listingUrl = product.querySelector(".listing-link").getAttribute("href");
                 listing.name = product.querySelector(".v2-listing-card__title").innerHTML();
                 temp = getProductDescription(listing.listingUrl, browser);
-                listing.description  = temp
-                        .replace("\n","")
+                listing.description = temp
+                        .replace("\n", "")
                         .replaceAll(",", " ");
                 String price = product.querySelector(".currency-value").innerHTML();
                 listing.price = price;
@@ -74,7 +80,6 @@ public class Main {
         FileOutputStream oFile = new FileOutputStream(productsCsv, true);
         try {
             // create a writer
-
             Writer writer = new FileWriter(filePath);//Files.newBufferedWriter(Paths.get("/Users/luis.sanchez/IdeaProjects/Pw-Harvester/src/files/file.csv"));
             HeaderColumnNameMappingStrategy<MarketListing> strategy = new HeaderColumnNameMappingStrategyBuilder<MarketListing>().build();
             strategy.setType(MarketListing.class);
@@ -88,7 +93,6 @@ public class Main {
                     //.withOrderedResults(true)
                     .withMappingStrategy(strategy)
                     .build();
-
             csvWriter.write(marketListings);
             // close the writer
             writer.close();
@@ -103,13 +107,5 @@ public class Main {
     }
 }
 
-class MarketListing {
-    String name;
-    String description;
-    String price;
-    String listingUrl;
-    String imageUrl;
-    int orderOnPage;
-    boolean paidSearch;
-}
+
 
